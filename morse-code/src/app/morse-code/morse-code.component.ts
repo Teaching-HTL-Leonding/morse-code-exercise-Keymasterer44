@@ -20,6 +20,8 @@ export class MorseCodeComponent {
 
   text = signal<string>("Hello World!");
   morseCode = signal<string>("");
+  encodeError = signal<string>("");
+  decodeError = signal<string>("");
 
   convertTextToMorseCode(): void {
     this.morseCode.set(this.mcService.convertTextToMorseCode(this.text()));
