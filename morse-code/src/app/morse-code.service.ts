@@ -102,8 +102,9 @@ export class MorseCodeService {
   }
 
   convertMorseCodeToText(morseCode: string): string | ConversionError[] {
-    const morseCodeSegments = morseCode.split(' / ').filter(segment => segment.length > 0);
+    const morseCodeSegments = morseCode.trim().split(' / ').filter(segment => segment.length > 0);
     return morseCodeSegments.map((segment, segI) => segment.split(' ').map((code, i) => {
+      code = code.trim();
       const text = this.morseCodeToTextMap.get(code);
       if (text === undefined) {
         if (!code.match(/^[.-]+$/)) {
