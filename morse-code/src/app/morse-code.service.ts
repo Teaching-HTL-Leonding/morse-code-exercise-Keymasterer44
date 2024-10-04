@@ -56,9 +56,27 @@ export class MorseCodeService {
     });
   }
 
+  merge(conversions: (string | ConversionError[])[], separator: string): string | ConversionError[] {
+    return conversions.reduce((p, c) => {
+      if (typeof p === "string") {
+        if (typeof c === "string") {
+          return `${p}${separator}${c}`;
+        } else {
+          return c;
+        }
+      } else {
+        if (typeof c === "string") {
+          return p;
+        } else {
+          return [...p, ...c];
+        }
+      }
+    });
+  }
+
   convertTextToMorseCode(text: string): string | ConversionError[] {
     const textSegments = text.split(' ').filter(segment => segment.length > 0);
-    return textSegments.map((segment, segI) => segment.split('').map((char, i) => {
+    return this.merge(textSegments.map((segment, segI) => this.merge(segment.split('').map((char, i) => {
       const morseCode = this.textToMorseCodeMap.get(char);
       if (morseCode === undefined) {
         const conversionError: ConversionError = {
@@ -70,40 +88,12 @@ export class MorseCodeService {
         return [conversionError];
       }
       return morseCode;
-    }).reduce((p, c) => {
-      if (typeof p === "string") {
-        if (typeof c === "string") {
-          return `${p} ${c}`;
-        } else {
-          return c;
-        }
-      } else {
-        if (typeof c === "string") {
-          return [...p];
-        } else {
-          return [...p, ...c];
-        }
-      }
-    })).reduce((p, c) => {
-      if (typeof p === "string") {
-        if (typeof c === "string") {
-          return `${p} / ${c}`;
-        } else {
-          return c;
-        }
-      } else {
-        if (typeof c === "string") {
-          return [...p];
-        } else {
-          return [...p, ...c];
-        }
-      }
-    });
+    }), ' ')), ' / ');
   }
 
   convertMorseCodeToText(morseCode: string): string | ConversionError[] {
     const morseCodeSegments = morseCode.trim().split(' / ').filter(segment => segment.length > 0);
-    return morseCodeSegments.map((segment, segI) => segment.split(' ').map((code, i) => {
+    return this.merge(morseCodeSegments.map((segment, segI) => this.merge(segment.split(' ').map((code, i) => {
       code = code.trim();
       const text = this.morseCodeToTextMap.get(code);
       if (text === undefined) {
@@ -126,34 +116,6 @@ export class MorseCodeService {
         }
       }
       return text;
-    }).reduce((p, c) => {
-      if (typeof p === "string") {
-        if (typeof c === "string") {
-          return `${p}${c}`;
-        } else {
-          return c;
-        }
-      } else {
-        if (typeof c === "string") {
-          return [...p];
-        } else {
-          return [...p, ...c];
-        }
-      }
-    })).reduce((p, c) => {
-      if (typeof p === "string") {
-        if (typeof c === "string") {
-          return `${p} ${c}`;
-        } else {
-          return c;
-        }
-      } else {
-        if (typeof c === "string") {
-          return [...p];
-        } else {
-          return [...p, ...c];
-        }
-      }
-    });
+    }), '')), ' ');
   }
 }
