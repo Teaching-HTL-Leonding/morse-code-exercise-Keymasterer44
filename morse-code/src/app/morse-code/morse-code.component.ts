@@ -15,19 +15,35 @@ export class MorseCodeComponent {
   mcService: MorseCodeService;
   constructor(private service: MorseCodeService) {
     this.mcService = service;
-    this.morseCode.set(this.mcService.convertTextToMorseCode(this.text()));
+    this.convertTextToMorseCode();
   }
 
-  text = signal<string>("Hello World!");
+  text = signal<string>("HELLO WORLD");
   morseCode = signal<string>("");
-  encodeError = signal<string>("");
-  decodeError = signal<string>("");
+  encodeErrors = signal<string[]>([]);
+  decodeErrors = signal<string[]>([]);
 
   convertTextToMorseCode(): void {
-    this.morseCode.set(this.mcService.convertTextToMorseCode(this.text()));
+    const conversionResult = this.mcService.convertTextToMorseCode(this.text());
+    if (typeof conversionResult === "string") {
+      this.morseCode.set(conversionResult);
+      this.encodeErrors.set([]);
+    } else {
+      this.encodeErrors.set(
+        conversionResult.map((e, i) => `${i+1}. "${e.problemSegment}" (word ${e.wordIndex+1}, char ${e.charIndex+1}) is not convertible to morse code.\nReason: ${e.message}`)
+      );
+    }
   }
 
   convertMorseCodeToText(): void {
-    this.text.set(this.mcService.convertMorseCodeToText(this.morseCode()));
+    const conversionResult = this.mcService.convertMorseCodeToText(this.morseCode());
+    if (typeof conversionResult === "string") {
+      this.text.set(conversionResult);
+      this.decodeErrors.set([]);
+    } else {
+      this.decodeErrors.set(
+        conversionResult.map((e, i) => `${i+1}. "${e.problemSegment}" (word ${e.wordIndex+1}, char ${e.charIndex+1}) is not valid morse code.\nReason: ${e.message}`)
+      )
+    }
   }
 }

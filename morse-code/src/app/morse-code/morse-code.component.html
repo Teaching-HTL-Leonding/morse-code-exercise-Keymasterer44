@@ -6,9 +6,15 @@
       <h2>Text to Morse Code</h2>
       <textarea [(ngModel)]="text" (input)="convertTextToMorseCode()" class="form-control" rows="5"></textarea>
     </div>
+    @for (e of encodeErrors(); track e) {
+      <p>{{ e }}</p>
+    }
     <div>
       <h2>Morse Code to Text</h2>
       <textarea [(ngModel)]="morseCode" (input)="convertMorseCodeToText()" class="form-control" rows="5"></textarea>
     </div>
+    @for (e of decodeErrors(); track e) {
+      <p>{{ e }}</p>
+    }
   </div>
 </div>
